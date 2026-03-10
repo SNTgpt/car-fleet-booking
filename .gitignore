@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.next/
+.env
+*.log
+npm-debug.log*
+.DS_Store
+coverage/
+.turbo/
+backend/node_modules/
+frontend/node_modules/
+backend/dist/
+frontend/.next/
+postgres-data/

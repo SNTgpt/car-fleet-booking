@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  user
+}
+
+enum VehicleStatus {
+  available
+  maintenance
+  unavailable
+  booked
+}
+
+enum BookingStatus {
+  requested
+  approved
+  rejected
+  cancelled
+  completed
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String    @unique
+  password   String
+  role       Role      @default(user)
+  isActive   Boolean   @default(true) @map("is_active")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  bookings   Booking[]
+  auditLogs  AuditLog[]
+
+  @@map("users")
+}
+
+model Vehicle {
+  id        Int           @id @default(autoincrement())
+  brand     String
+  model     String
+  plate     String        @unique
+  location  String
+  category  String
+  fuelType  String        @map("fuel_type")
+  seats     Int
+  status    VehicleStatus @default(available)
+  notes     String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  bookings  Booking[]
+
+  @@index([location])
+  @@index([category])
+  @@index([status])
+  @@map("vehicles")
+}
+
+model Booking {
+  id            Int           @id @default(autoincrement())
+  vehicleId     Int           @map("vehicle_id")
+  userId        Int           @map("user_id")
+  startDatetime DateTime      @map("start_datetime")
+  endDatetime   DateTime      @map("end_datetime")
+  reason        String
+  status        BookingStatus @default(requested)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  vehicle       Vehicle       @relation(fields: [vehicleId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+
+  @@index([vehicleId, startDatetime, endDatetime])
+  @@index([userId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  action    String
+  entity    String
+  entityId  Int      @map("entity_id")
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@map("audit_logs")
+}
