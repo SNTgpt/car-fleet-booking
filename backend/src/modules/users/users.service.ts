@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../common/prisma.service';
@@ -97,5 +98,26 @@ export class UsersService {
       data: { isActive: !user.isActive },
       select: { id: true, name: true, email: true, isActive: true },
     });
+  }
+
+  async remove(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('Utente non trovato');
+
+    const activeBookings = await this.prisma.booking.count({
+      where: {
+        userId: id,
+        status: { in: ['requested', 'approved'] },
+      },
+    });
+    if (activeBookings > 0) {
+      throw new BadRequestException(
+        'Impossibile eliminare: l\'utente ha prenotazioni attive',
+      );
+    }
+
+    await this.prisma.booking.deleteMany({ where: { userId: id } });
+    await this.prisma.user.delete({ where: { id } });
+    return { message: 'Utente eliminato' };
   }
 }

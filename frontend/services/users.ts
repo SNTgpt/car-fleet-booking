@@ -25,4 +25,7 @@ export const usersService = {
 
   toggleActive: (id: number) =>
     api.patch<UserRecord>(`/users/${id}/toggle-active`).then((r) => r.data),
+
+  remove: (id: number) =>
+    api.delete(`/users/${id}`).then((r) => r.data),
 };

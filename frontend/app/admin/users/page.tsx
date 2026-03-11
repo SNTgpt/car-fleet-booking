@@ -37,6 +37,21 @@ export default function AdminUsersPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: usersService.remove,
+    onSuccess: () => {
+      toast.success('Utente eliminato');
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Errore durante l\'eliminazione'),
+  });
+
+  const confirmDelete = (u: UserRecord) => {
+    if (window.confirm(`Sei sicuro di voler eliminare l'utente "${u.name}"? Le prenotazioni completate/cancellate verranno rimosse.`)) {
+      deleteMutation.mutate(u.id);
+    }
+  };
+
   const resetForm = () => {
     setShowForm(false);
     setEditing(null);
@@ -82,6 +97,7 @@ export default function AdminUsersPage() {
           <button onClick={() => toggleMutation.mutate(u.id)} className="text-yellow-600 hover:underline text-sm">
             {u.isActive ? 'Disattiva' : 'Attiva'}
           </button>
+          <button onClick={() => confirmDelete(u)} className="text-red-600 hover:underline text-sm">Elimina</button>
         </div>
       ),
     },
