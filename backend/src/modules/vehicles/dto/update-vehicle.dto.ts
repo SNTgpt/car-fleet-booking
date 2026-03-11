@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsInt, IsEnum, Min } from 'class-validator';
+import { VehicleStatus } from '@prisma/client';
 
 export class UpdateVehicleDto {
   @IsOptional()
@@ -31,8 +32,8 @@ export class UpdateVehicleDto {
   seats?: number;
 
   @IsOptional()
-  @IsEnum(['available', 'maintenance', 'unavailable', 'booked'])
-  status?: string;
+  @IsEnum(VehicleStatus)
+  status?: VehicleStatus;
 
   @IsOptional()
   @IsString()

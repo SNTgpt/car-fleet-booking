@@ -35,7 +35,7 @@ services:
       postgres:
         condition: service_healthy
     command: >
-      sh -c "npx prisma migrate deploy && npx prisma generate && npm run start:dev"
+      sh -c "npx prisma migrate deploy && npx prisma generate && node auto-seed.js && npm run start:dev"
 
   frontend:
     build:
@@ -45,11 +45,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NEXT_PUBLIC_API_URL: ""
     volumes:
       - ./frontend:/app
       - frontend-node-modules:/app/node_modules
-      - frontend-next:/app/.next
     depends_on:
       - backend
     command: npm run dev
@@ -58,4 +57,3 @@ volumes:
   postgres-data:
   backend-node-modules:
   frontend-node-modules:
-  frontend-next:
