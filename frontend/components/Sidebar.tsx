@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -20,8 +21,9 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-gray-900 text-white min-h-screen flex flex-col">
       <div className="p-6">
-        <Link href="/admin/dashboard" className="text-xl font-bold text-white">
-          CarFleet Admin
+        <Link href="/admin/dashboard" className="flex flex-col items-center gap-2">
+          <Image src="/logo-snt.png" alt="S&NT" width={120} height={48} className="h-10 w-auto" />
+          <span className="text-lg font-bold text-white">CarFleet Admin</span>
         </Link>
       </div>
       <nav className="flex-1 px-4">
@@ -40,7 +42,7 @@ export default function Sidebar() {
         ))}
       </nav>
       <div className="p-4 border-t border-gray-800">
-        <Link href="/dashboard" className="block text-sm text-gray-400 hover:text-white mb-2 px-4">
+        <Link href="/agenda" className="block text-sm text-gray-400 hover:text-white mb-2 px-4">
           Torna al portale
         </Link>
         <button

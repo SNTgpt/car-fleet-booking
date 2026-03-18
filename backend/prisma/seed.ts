@@ -13,6 +13,7 @@ async function main() {
     update: {},
     create: {
       name: 'Admin',
+      username: 'admin',
       email: 'admin@example.com',
       password: hash,
       role: Role.admin,
@@ -26,6 +27,7 @@ async function main() {
     update: {},
     create: {
       name: 'Mario Rossi',
+      username: 'mario.rossi',
       email: 'mario.rossi@example.com',
       password: userHash,
       role: Role.user,
@@ -38,6 +40,7 @@ async function main() {
     update: {},
     create: {
       name: 'Laura Bianchi',
+      username: 'laura.bianchi',
       email: 'laura.bianchi@example.com',
       password: userHash,
       role: Role.user,
@@ -50,6 +53,7 @@ async function main() {
     update: {},
     create: {
       name: 'Paolo Verdi',
+      username: 'paolo.verdi',
       email: 'paolo.verdi@example.com',
       password: userHash,
       role: Role.user,

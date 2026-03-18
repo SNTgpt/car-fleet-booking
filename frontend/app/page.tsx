@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!isLoading) {
-      router.push(user ? '/dashboard' : '/login');
+      router.push(user ? (user.role === 'admin' ? '/admin/dashboard' : '/agenda') : '/login');
     }
   }, [user, isLoading, router]);
 

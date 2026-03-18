@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -19,18 +20,19 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-200 px-6 py-3">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="text-xl font-bold text-primary-700">
-            CarFleet
+          <Link href="/agenda" className="flex items-center gap-2">
+            <Image src="/logo-snt.png" alt="S&NT" width={80} height={32} className="h-8 w-auto" />
+            <span className="text-lg font-bold text-primary-700">CarFleet</span>
           </Link>
           <div className="hidden md:flex items-center gap-4">
+            <Link href="/agenda" className="text-gray-600 hover:text-primary-600 transition-colors">
+              Agenda
+            </Link>
             <Link href="/dashboard" className="text-gray-600 hover:text-primary-600 transition-colors">
               Dashboard
             </Link>
             <Link href="/vehicles" className="text-gray-600 hover:text-primary-600 transition-colors">
               Veicoli
-            </Link>
-            <Link href="/bookings" className="text-gray-600 hover:text-primary-600 transition-colors">
-              Prenota
             </Link>
             <Link href="/my-bookings" className="text-gray-600 hover:text-primary-600 transition-colors">
               Le mie prenotazioni

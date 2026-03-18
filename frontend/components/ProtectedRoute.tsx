@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children, adminOnly = false }: Props) {
       if (!user) {
         router.push('/login');
       } else if (adminOnly && user.role !== 'admin') {
-        router.push('/dashboard');
+        router.push('/agenda');
       }
     }
   }, [user, isLoading, adminOnly, router]);

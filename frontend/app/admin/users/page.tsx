@@ -11,7 +11,7 @@ export default function AdminUsersPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<UserRecord | null>(null);
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
+  const [form, setForm] = useState({ name: '', username: '', email: '', password: '', role: 'user' });
 
   const { data: users = [] } = useQuery({
     queryKey: ['admin-users'],
@@ -55,18 +55,18 @@ export default function AdminUsersPage() {
   const resetForm = () => {
     setShowForm(false);
     setEditing(null);
-    setForm({ name: '', email: '', password: '', role: 'user' });
+    setForm({ name: '', username: '', email: '', password: '', role: 'user' });
   };
 
   const editUser = (u: UserRecord) => {
     setEditing(u);
-    setForm({ name: u.name, email: u.email, password: '', role: u.role });
+    setForm({ name: u.name, username: u.username, email: u.email, password: '', role: u.role });
     setShowForm(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const data: any = { name: form.name, email: form.email, role: form.role };
+    const data: any = { name: form.name, username: form.username, email: form.email, role: form.role };
     if (form.password) data.password = form.password;
     if (!editing) data.password = form.password;
     saveMutation.mutate(data);
@@ -75,6 +75,7 @@ export default function AdminUsersPage() {
   const columns = [
     { key: 'id', header: 'ID' },
     { key: 'name', header: 'Nome' },
+    { key: 'username', header: 'Username' },
     { key: 'email', header: 'Email' },
     { key: 'role', header: 'Ruolo', render: (u: UserRecord) => (
       <span className={`font-medium ${u.role === 'admin' ? 'text-primary-600' : 'text-gray-600'}`}>
@@ -116,7 +117,8 @@ export default function AdminUsersPage() {
         <div className="card mb-6">
           <h2 className="text-lg font-semibold mb-4">{editing ? 'Modifica utente' : 'Nuovo utente'}</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input placeholder="Nome" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" required />
+            <input placeholder="Nome completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" required />
+            <input placeholder="Username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} className="input-field" required />
             <input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" required />
             <input type="password" placeholder={editing ? 'Nuova password (opzionale)' : 'Password'} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input-field" required={!editing} />
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="input-field">

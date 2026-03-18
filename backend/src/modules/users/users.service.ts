@@ -18,6 +18,7 @@ export class UsersService {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         isActive: true,
@@ -34,6 +35,7 @@ export class UsersService {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         isActive: true,
@@ -46,15 +48,21 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto) {
-    const exists = await this.prisma.user.findUnique({
+    const existsEmail = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-    if (exists) throw new ConflictException('Email già registrata');
+    if (existsEmail) throw new ConflictException('Email già registrata');
+
+    const existsUsername = await this.prisma.user.findUnique({
+      where: { username: dto.username },
+    });
+    if (existsUsername) throw new ConflictException('Username già in uso');
 
     const hash = await bcrypt.hash(dto.password, 10);
     return this.prisma.user.create({
       data: {
         name: dto.name,
+        username: dto.username,
         email: dto.email,
         password: hash,
         role: dto.role || 'user',
@@ -62,6 +70,7 @@ export class UsersService {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         isActive: true,
@@ -82,6 +91,7 @@ export class UsersService {
       select: {
         id: true,
         name: true,
+        username: true,
         email: true,
         role: true,
         isActive: true,

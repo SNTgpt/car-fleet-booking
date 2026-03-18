@@ -3,6 +3,7 @@ import api from './api';
 export interface UserRecord {
   id: number;
   name: string;
+  username: string;
   email: string;
   role: 'admin' | 'user';
   isActive: boolean;
@@ -17,7 +18,7 @@ export const usersService = {
   getOne: (id: number) =>
     api.get<UserRecord>(`/users/${id}`).then((r) => r.data),
 
-  create: (data: { name: string; email: string; password: string; role?: string }) =>
+  create: (data: { name: string; username: string; email: string; password: string; role?: string }) =>
     api.post<UserRecord>('/users', data).then((r) => r.data),
 
   update: (id: number, data: Partial<UserRecord & { password?: string }>) =>

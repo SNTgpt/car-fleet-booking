@@ -13,7 +13,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { username: dto.username },
     });
 
     if (!user || !user.isActive) {
@@ -25,12 +25,13 @@ export class AuthService {
       throw new UnauthorizedException('Credenziali non valide');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
       },

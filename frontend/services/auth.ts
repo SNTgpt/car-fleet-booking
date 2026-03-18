@@ -1,13 +1,14 @@
 import api from './api';
 
 export interface LoginPayload {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface User {
   id: number;
   name: string;
+  username: string;
   email: string;
   role: 'admin' | 'user';
 }
