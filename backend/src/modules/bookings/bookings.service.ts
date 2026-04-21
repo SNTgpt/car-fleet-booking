@@ -83,10 +83,6 @@ export class BookingsService {
       throw new ForbiddenException('Non puoi modificare questa prenotazione');
     }
 
-    if (role !== 'admin' && !['requested'].includes(booking.status)) {
-      throw new ForbiddenException('Prenotazione non modificabile');
-    }
-
     if (dto.startDatetime || dto.endDatetime) {
       const start = dto.startDatetime ? new Date(dto.startDatetime) : booking.startDatetime;
       const end = dto.endDatetime ? new Date(dto.endDatetime) : booking.endDatetime;
@@ -94,10 +90,10 @@ export class BookingsService {
     }
 
     const data: any = {};
-    if (dto.startDatetime) data.startDatetime = new Date(dto.startDatetime);
-    if (dto.endDatetime) data.endDatetime = new Date(dto.endDatetime);
-    if (dto.reason) data.reason = dto.reason;
-    if (dto.status) data.status = dto.status;
+    if (dto.startDatetime !== undefined) data.startDatetime = new Date(dto.startDatetime);
+    if (dto.endDatetime !== undefined) data.endDatetime = new Date(dto.endDatetime);
+    if (dto.reason !== undefined) data.reason = dto.reason;
+    if (dto.status !== undefined) data.status = dto.status;
 
     return this.prisma.booking.update({
       where: { id },
@@ -151,7 +147,7 @@ export class BookingsService {
   ) {
     const where: any = {
       vehicleId,
-      status: { in: ['approved', 'completed'] },
+      status: 'approved',
       startDatetime: { lt: end },
       endDatetime: { gt: start },
     };

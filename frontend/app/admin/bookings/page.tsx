@@ -8,6 +8,10 @@ import { usersService } from '@/services/users';
 import DataTable from '@/components/DataTable';
 import toast from 'react-hot-toast';
 
+function parseLocalDate(dt: string): Date {
+  return new Date(dt.replace('Z', ''));
+}
+
 export default function AdminBookingsPage() {
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({ date: '', vehicleId: '', userId: '', reason: '' });
@@ -56,8 +60,8 @@ export default function AdminBookingsPage() {
 
   const startEdit = (b: Booking) => {
     setEditing(b);
-    const startLocal = new Date(b.startDatetime);
-    const endLocal = new Date(b.endDatetime);
+    const startLocal = parseLocalDate(b.startDatetime);
+    const endLocal = parseLocalDate(b.endDatetime);
     setEditForm({
       startDatetime: toLocalDatetimeString(startLocal),
       endDatetime: toLocalDatetimeString(endLocal),
@@ -71,8 +75,8 @@ export default function AdminBookingsPage() {
     updateMutation.mutate({
       id: editing.id,
       data: {
-        startDatetime: new Date(editForm.startDatetime).toISOString(),
-        endDatetime: new Date(editForm.endDatetime).toISOString(),
+        startDatetime: editForm.startDatetime + ':00',
+        endDatetime: editForm.endDatetime + ':00',
         reason: editForm.reason,
       },
     });
@@ -80,7 +84,7 @@ export default function AdminBookingsPage() {
 
   const confirmDelete = (b: Booking) => {
     const desc = b.vehicle ? `${b.vehicle.brand} ${b.vehicle.model}` : `#${b.id}`;
-    const date = new Date(b.startDatetime).toLocaleDateString('it-IT');
+    const date = parseLocalDate(b.startDatetime).toLocaleDateString('it-IT');
     if (window.confirm(`Eliminare la prenotazione di ${desc} del ${date}?`)) {
       deleteMutation.mutate(b.id);
     }
@@ -99,11 +103,11 @@ export default function AdminBookingsPage() {
     },
     {
       key: 'startDatetime', header: 'Inizio',
-      render: (b: Booking) => new Date(b.startDatetime).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      render: (b: Booking) => parseLocalDate(b.startDatetime).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
     },
     {
       key: 'endDatetime', header: 'Fine',
-      render: (b: Booking) => new Date(b.endDatetime).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      render: (b: Booking) => parseLocalDate(b.endDatetime).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
     },
     { key: 'reason', header: 'Motivo' },
     {

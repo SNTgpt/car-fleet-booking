@@ -37,12 +37,12 @@ export default function MyBookingsPage() {
     {
       key: 'startDatetime',
       header: 'Inizio',
-      render: (b: Booking) => new Date(b.startDatetime).toLocaleString('it-IT'),
+      render: (b: Booking) => new Date(b.startDatetime.replace('Z','')).toLocaleString('it-IT'),
     },
     {
       key: 'endDatetime',
       header: 'Fine',
-      render: (b: Booking) => new Date(b.endDatetime).toLocaleString('it-IT'),
+      render: (b: Booking) => new Date(b.endDatetime.replace('Z','')).toLocaleString('it-IT'),
     },
     { key: 'reason', header: 'Motivo' },
     {

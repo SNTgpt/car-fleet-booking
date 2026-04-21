@@ -7,6 +7,17 @@ import { vehiclesService, Vehicle } from '@/services/vehicles';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 
+// Parse datetime from DB as local time (DB stores without timezone)
+function parseLocalDate(dt: string): Date {
+  return new Date(dt.replace('Z', ''));
+}
+
+// Format local date to ISO string without timezone shift
+function toLocalISO(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 const TIME_SLOTS: string[] = [];
 for (let h = 7; h <= 20; h++) {
   TIME_SLOTS.push(`${String(h).padStart(2, '0')}:00`);
@@ -66,10 +77,11 @@ function BookingModal({ vehicle, date, startTime, onClose, onSubmit, submitting 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const dateStr2 = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
     onSubmit({
       vehicleId: vehicle.id,
-      startDatetime: `${dateStr}T${start}:00`,
-      endDatetime: `${dateStr}T${end}:00`,
+      startDatetime: `${dateStr2}T${start}:00`,
+      endDatetime: `${dateStr2}T${end}:00`,
       reason,
     });
   };
@@ -136,8 +148,8 @@ export default function AgendaView() {
   const dayBookings = useMemo(() => {
     return allBookings.filter((b) => {
       if (b.status === 'rejected' || b.status === 'cancelled') return false;
-      const start = new Date(b.startDatetime);
-      const end = new Date(b.endDatetime);
+      const start = parseLocalDate(b.startDatetime);
+      const end = parseLocalDate(b.endDatetime);
       const dayStart = new Date(selectedDate);
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(selectedDate);
@@ -153,15 +165,15 @@ export default function AgendaView() {
 
     return dayBookings.find((b) => {
       if (b.vehicleId !== vehicleId) return false;
-      const bStart = new Date(b.startDatetime);
-      const bEnd = new Date(b.endDatetime);
+      const bStart = parseLocalDate(b.startDatetime);
+      const bEnd = parseLocalDate(b.endDatetime);
       return slotStart >= bStart && slotStart < bEnd;
     }) || null;
   };
 
   const getBookingSlotSpan = (booking: Booking, slotTime: string): number => {
-    const bStart = new Date(booking.startDatetime);
-    const bEnd = new Date(booking.endDatetime);
+    const bStart = parseLocalDate(booking.startDatetime);
+    const bEnd = parseLocalDate(booking.endDatetime);
     const [h, m] = slotTime.split(':').map(Number);
     const slotDate = new Date(selectedDate);
     slotDate.setHours(h, m, 0, 0);
@@ -181,7 +193,7 @@ export default function AgendaView() {
   };
 
   const isFirstSlotOfBooking = (booking: Booking, slotTime: string): boolean => {
-    const bStart = new Date(booking.startDatetime);
+    const bStart = parseLocalDate(booking.startDatetime);
     const [h, m] = slotTime.split(':').map(Number);
     const dayMinStart = new Date(selectedDate);
     dayMinStart.setHours(7, 0, 0, 0);
@@ -223,8 +235,8 @@ export default function AgendaView() {
   });
 
   const openEdit = (b: Booking) => {
-    const s = new Date(b.startDatetime);
-    const e = new Date(b.endDatetime);
+    const s = parseLocalDate(b.startDatetime);
+    const e = parseLocalDate(b.endDatetime);
     setEditForm({
       start: `${String(s.getHours()).padStart(2,'0')}:${String(s.getMinutes()).padStart(2,'0')}`,
       end: `${String(e.getHours()).padStart(2,'0')}:${String(e.getMinutes()).padStart(2,'0')}`,
@@ -237,8 +249,7 @@ export default function AgendaView() {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBooking) return;
-    const bDate = new Date(editingBooking.startDatetime);
-    const dateStr2 = `${bDate.getFullYear()}-${String(bDate.getMonth()+1).padStart(2,'0')}-${String(bDate.getDate()).padStart(2,'0')}`;
+    const dateStr2 = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth()+1).padStart(2,'0')}-${String(selectedDate.getDate()).padStart(2,'0')}`;
     updateMutation.mutate({
       id: editingBooking.id,
       data: {
@@ -396,9 +407,9 @@ export default function AgendaView() {
                                 {booking.reason}
                               </div>
                               <div className="text-xs text-gray-400 mt-0.5">
-                                {new Date(booking.startDatetime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                                {parseLocalDate(booking.startDatetime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
                                 {' - '}
-                                {new Date(booking.endDatetime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                                {parseLocalDate(booking.endDatetime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
                               </div>
                             </td>
                           );
@@ -518,8 +529,8 @@ export default function AgendaView() {
             <div className="space-y-2 text-sm mb-4">
               <p><span className="font-medium text-gray-500">Utente:</span> {selectedBooking.user?.name || 'N/D'}</p>
               <p><span className="font-medium text-gray-500">Motivo:</span> {selectedBooking.reason}</p>
-              <p><span className="font-medium text-gray-500">Inizio:</span> {new Date(selectedBooking.startDatetime).toLocaleString('it-IT')}</p>
-              <p><span className="font-medium text-gray-500">Fine:</span> {new Date(selectedBooking.endDatetime).toLocaleString('it-IT')}</p>
+              <p><span className="font-medium text-gray-500">Inizio:</span> {parseLocalDate(selectedBooking.startDatetime).toLocaleString('it-IT')}</p>
+              <p><span className="font-medium text-gray-500">Fine:</span> {parseLocalDate(selectedBooking.endDatetime).toLocaleString('it-IT')}</p>
             </div>
             <div className="flex gap-3">
               <button onClick={() => openEdit(selectedBooking)} className="btn-primary flex-1 text-sm">Modifica</button>

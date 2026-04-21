@@ -64,8 +64,8 @@ export default function DashboardPage() {
                         {b.vehicle?.brand} {b.vehicle?.model}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(b.startDatetime).toLocaleDateString('it-IT')} -{' '}
-                        {new Date(b.endDatetime).toLocaleDateString('it-IT')}
+                        {new Date(b.startDatetime.replace('Z','')).toLocaleDateString('it-IT')} -{' '}
+                        {new Date(b.endDatetime.replace('Z','')).toLocaleDateString('it-IT')}
                       </p>
                     </div>
                     <StatusBadge status={b.status} />
