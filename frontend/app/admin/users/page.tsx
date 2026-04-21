@@ -82,6 +82,11 @@ export default function AdminUsersPage() {
         {u.role === 'admin' ? 'Admin' : 'Utente'}
       </span>
     )},
+    { key: 'authSource', header: 'Origine', render: (u: UserRecord) => (
+      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${u.authSource === 'ldap' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+        {u.authSource === 'ldap' ? 'Active Directory' : 'Locale'}
+      </span>
+    )},
     {
       key: 'isActive', header: 'Stato',
       render: (u: UserRecord) => (

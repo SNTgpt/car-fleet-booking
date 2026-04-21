@@ -21,8 +21,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "4000:4000"
+    expose:
+      - "4000"
     environment:
       DATABASE_URL: postgresql://carfleet:carfleet@postgres:5432/carfleet?schema=public
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
@@ -34,6 +34,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - default
+      - web
     command: >
       sh -c "npx prisma migrate deploy && npx prisma generate && node auto-seed.js && npm run start:dev"
 
@@ -42,8 +45,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       NEXT_PUBLIC_API_URL: ""
     volumes:
@@ -51,9 +54,17 @@ services:
       - frontend-node-modules:/app/node_modules
     depends_on:
       - backend
+    networks:
+      - default
+      - web
     command: npm run dev
 
 volumes:
   postgres-data:
   backend-node-modules:
   frontend-node-modules:
+
+networks:
+  default:
+  web:
+    external: true

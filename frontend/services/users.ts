@@ -6,6 +6,7 @@ export interface UserRecord {
   username: string;
   email: string;
   role: 'admin' | 'user';
+  authSource: 'local' | 'ldap';
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { LdapModule } from '../ldap/ldap.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { JwtStrategy } from './jwt.strategy';
       secret: process.env.JWT_SECRET || 'change-me-in-production',
       signOptions: { expiresIn: process.env.JWT_EXPIRATION || '24h' },
     }),
+    LdapModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

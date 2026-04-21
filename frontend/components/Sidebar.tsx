@@ -7,9 +7,11 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const adminLinks = [
   { href: '/admin/dashboard', label: 'Dashboard' },
+  { href: '/admin/agenda', label: 'Agenda' },
   { href: '/admin/vehicles', label: 'Veicoli' },
   { href: '/admin/bookings', label: 'Prenotazioni' },
   { href: '/admin/users', label: 'Utenti' },
+  { href: '/admin/ldap', label: 'Active Directory' },
   { href: '/admin/logs', label: 'Audit Log' },
 ];
 

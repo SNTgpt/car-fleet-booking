@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   Query,
@@ -26,10 +27,16 @@ export class BookingsController {
   findAll(
     @Query('status') status?: string,
     @Query('vehicleId') vehicleId?: string,
+    @Query('userId') userId?: string,
+    @Query('date') date?: string,
+    @Query('reason') reason?: string,
   ) {
     return this.bookingsService.findAll({
       status,
       vehicleId: vehicleId ? parseInt(vehicleId) : undefined,
+      userId: userId ? parseInt(userId) : undefined,
+      date,
+      reason,
     });
   }
 
@@ -82,5 +89,14 @@ export class BookingsController {
     @Body('status') status: string,
   ) {
     return this.bookingsService.updateStatus(id, status);
+  }
+
+  @Delete(':id')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('sub') userId: number,
+    @CurrentUser('role') role: string,
+  ) {
+    return this.bookingsService.remove(id, userId, role);
   }
 }

@@ -17,6 +17,7 @@ enum VehicleStatus {
   maintenance
   unavailable
   booked
+  dismissed
 }
 
 enum BookingStatus {
@@ -27,21 +28,47 @@ enum BookingStatus {
   completed
 }
 
+enum AuthSource {
+  local
+  ldap
+}
+
 model User {
-  id         Int       @id @default(autoincrement())
-  name       String
-  username   String    @unique
-  email      String    @unique
-  password   String
-  role       Role      @default(user)
-  isActive   Boolean   @default(true) @map("is_active")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
+  id          Int        @id @default(autoincrement())
+  name        String
+  username    String     @unique
+  email       String     @unique
+  password    String
+  role        Role       @default(user)
+  authSource  AuthSource @default(local) @map("auth_source")
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
   bookings   Booking[]
   auditLogs  AuditLog[]
 
   @@map("users")
+}
+
+model LdapConfig {
+  id              Int      @id @default(1)
+  enabled         Boolean  @default(false)
+  serverUrl       String   @map("server_url")
+  bindDn          String   @map("bind_dn")
+  bindPassword    String   @map("bind_password")
+  searchBase      String   @map("search_base")
+  searchFilter    String   @default("(sAMAccountName={{username}})") @map("search_filter")
+  emailAttribute  String   @default("mail") @map("email_attribute")
+  nameAttribute   String   @default("displayName") @map("name_attribute")
+  defaultRole     Role     @default(user) @map("default_role")
+  syncEnabled     Boolean  @default(false) @map("sync_enabled")
+  syncIntervalMin Int      @default(30) @map("sync_interval_min")
+  tlsRejectUnauthorized Boolean @default(true) @map("tls_reject_unauthorized")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("ldap_config")
 }
 
 model Vehicle {

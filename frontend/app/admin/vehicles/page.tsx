@@ -107,6 +107,7 @@ export default function AdminVehiclesPage() {
               <option value="available">Disponibile</option>
               <option value="maintenance">In manutenzione</option>
               <option value="unavailable">Non disponibile</option>
+              <option value="dismissed">Dismesso</option>
             </select>
             <input placeholder="Note" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field" />
             <div className="md:col-span-3 flex gap-3">

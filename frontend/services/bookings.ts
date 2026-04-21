@@ -52,6 +52,9 @@ export const bookingsService = {
   updateStatus: (id: number, status: string) =>
     api.patch(`/bookings/${id}/status`, { status }).then((r) => r.data),
 
+  remove: (id: number) =>
+    api.delete(`/bookings/${id}`).then((r) => r.data),
+
   getCalendar: (vehicleId?: number) =>
     api.get<Booking[]>('/bookings/calendar', {
       params: vehicleId ? { vehicleId } : {},

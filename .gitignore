@@ -12,3 +12,29 @@ frontend/node_modules/
 backend/dist/
 frontend/.next/
 postgres-data/
+
+# SSL/certificates
+*.key
+*.crt
+*.pem
+*.zip
+*.7z
+nginx/certs/
+ssl_certificate*
+
+# Uploaded images
+ad.jpg
+21-04.jpg
+22-04.jpg
+vector-car-icon.jpg
+
+# Import data
+import_data/
+backend/import_data/
+
+# Screenshots
+screenshots/
+
+# Environment
+frontend/.env.local
+frontend/next-env.d.ts

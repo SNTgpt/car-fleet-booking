@@ -12,10 +12,19 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(filters?: { status?: string; vehicleId?: number }) {
+  async findAll(filters?: { status?: string; vehicleId?: number; userId?: number; date?: string; reason?: string }) {
     const where: any = {};
     if (filters?.status) where.status = filters.status;
     if (filters?.vehicleId) where.vehicleId = filters.vehicleId;
+    if (filters?.userId) where.userId = filters.userId;
+    if (filters?.reason) where.reason = { contains: filters.reason, mode: 'insensitive' };
+    if (filters?.date) {
+      const dayStart = new Date(filters.date);
+      const dayEnd = new Date(filters.date);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+      where.startDatetime = { lt: dayEnd };
+      where.endDatetime = { gt: dayStart };
+    }
 
     return this.prisma.booking.findMany({
       where,
@@ -59,7 +68,7 @@ export class BookingsService {
         startDatetime: new Date(dto.startDatetime),
         endDatetime: new Date(dto.endDatetime),
         reason: dto.reason,
-        status: 'requested',
+        status: 'approved',
       },
       include: {
         vehicle: { select: { id: true, brand: true, model: true, plate: true } },
@@ -125,6 +134,15 @@ export class BookingsService {
     });
   }
 
+  async remove(id: number, userId: number, role: string) {
+    const booking = await this.findOne(id);
+    if (role !== 'admin' && booking.userId !== userId) {
+      throw new ForbiddenException('Non puoi eliminare questa prenotazione');
+    }
+    await this.prisma.booking.delete({ where: { id } });
+    return { message: 'Prenotazione eliminata' };
+  }
+
   private async checkOverlap(
     vehicleId: number,
     start: Date,
@@ -133,7 +151,7 @@ export class BookingsService {
   ) {
     const where: any = {
       vehicleId,
-      status: { in: ['requested', 'approved'] },
+      status: { in: ['approved', 'completed'] },
       startDatetime: { lt: end },
       endDatetime: { gt: start },
     };
@@ -149,7 +167,7 @@ export class BookingsService {
 
   async getCalendarEvents(vehicleId?: number) {
     const where: any = {
-      status: { in: ['requested', 'approved'] },
+      status: { in: ['approved', 'completed'] },
     };
     if (vehicleId) where.vehicleId = vehicleId;
 
