@@ -260,13 +260,17 @@ export class LdapService implements OnModuleInit {
   }
 
   private createClient(config: LdapConfig): ldap.Client {
-    return ldap.createClient({
+    const client = ldap.createClient({
       url: config.serverUrl,
       tlsOptions: {
         rejectUnauthorized: config.tlsRejectUnauthorized,
       },
       connectTimeout: 10000,
     });
+    client.on('error', (err) => {
+      this.logger.warn(`LDAP client error: ${err.message}`);
+    });
+    return client;
   }
 
   private bindClient(client: ldap.Client, dn: string, password: string): Promise<void> {
